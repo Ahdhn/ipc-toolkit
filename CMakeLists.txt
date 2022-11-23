@@ -28,14 +28,14 @@ endif()
 
 project(IPCToolkit
         DESCRIPTION "A set of reusable functions to integrate IPC into an existing simulation."
-        LANGUAGES CXX
+        LANGUAGES CXX CUDA
         VERSION "0.0.1")
 
 option(IPC_TOOLKIT_BUILD_TESTS                "Build unit-tests"  ${IPC_TOOLKIT_TOPLEVEL_PROJECT})
 option(IPC_TOOLKIT_BUILD_PYTHON               "Build Python bindings"                         OFF)
 option(IPC_TOOLKIT_WITH_CORRECT_CCD           "Use the TightInclusion CCD"                     ON)
 option(IPC_TOOLKIT_WITH_SIMD                  "Enable SIMD"                                   OFF)
-option(IPC_TOOLKIT_WITH_CUDA                  "Enable CUDA CCD"                               OFF)
+option(IPC_TOOLKIT_WITH_CUDA                  "Enable CUDA CCD"                               ON)
 option(IPC_TOOLKIT_WITH_RATIONAL_INTERSECTION "Use rational edge-triangle intersection check" OFF)
 
 # Set default minimum C++ standard
@@ -63,6 +63,7 @@ include(ipc_toolkit_target_link_system_libraries)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 ################################################################################
 # IPC Toolkit Library
@@ -176,7 +177,7 @@ target_compile_features(ipc_toolkit PUBLIC cxx_std_17)
 ################################################################################
 # CUDA
 ################################################################################
-
+set(CUDA_SEPARABLE_COMPILATION ON)
 if(IPC_TOOLKIT_WITH_CUDA)
   include(CheckLanguage)
   check_language(CUDA)
@@ -196,9 +197,9 @@ if(IPC_TOOLKIT_WITH_CUDA)
   # Nvidia 1080/1080Ti -> compute_61
   # Nvidia 3080Ti -> compute_86
   if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
+    set(CMAKE_CUDA_ARCHITECTURES 86)
   endif()
-  set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+  set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "86")
 
   if(APPLE)
     # We need to add the path to the driver (libcuda.dylib) as an rpath,

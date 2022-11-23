@@ -3,7 +3,7 @@ set(SOURCES
   collision_mesh.hpp
   config.hpp
   ipc.hpp
-  ipc.cpp
+  ipc.cu
 )
 
 ipc_toolkit_prepend_current_path(SOURCES)

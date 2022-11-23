@@ -3,7 +3,7 @@
 ################################################################################
 
 add_executable(ipc_toolkit_tests
-  main.cpp
+  main.cu
 
   # Test barrier and dertivatives
   barrier/test_barrier.cpp
@@ -70,9 +70,14 @@ ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PUBLIC finitediff::fi
 include(json)
 ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PUBLIC nlohmann_json::nlohmann_json)
 
-if(IPC_TOOLKIT_WITH_CUDA)
-  find_package(CUDAToolkit)
-  ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
+if(IPC_TOOLKIT_WITH_CUDA)  
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_ARCHITECTURES "86")
+  target_compile_options(ipc_toolkit_tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+  --generate-line-info
+  --use_fast_math
+  --relocatable-device-code=true>)
+  #find_package(CUDAToolkit)
+  #ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
 endif()
 
 ################################################################################
@@ -82,11 +87,11 @@ endif()
 target_compile_definitions(ipc_toolkit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 # Test data directory definition
-if(WIN32)
-  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}\\\\data\\\\")
-else()
+#if(WIN32)
+#  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}\\\\data\\\\")
+#else()
   target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
-endif()
+#sendif()
 
 ################################################################################
 # Register tests

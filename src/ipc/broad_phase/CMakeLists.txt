@@ -9,7 +9,7 @@ set(SOURCES
   hash_grid.hpp
   spatial_hash.cpp
   spatial_hash.hpp
-  sweep_and_tiniest_queue.cpp
+  sweep_and_tiniest_queue.cu
   sweep_and_tiniest_queue.hpp
   voxel_size_heuristic.cpp
   voxel_size_heuristic.hpp
