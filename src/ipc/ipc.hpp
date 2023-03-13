@@ -142,6 +142,7 @@ double compute_minimum_distance(
 bool has_intersections(
     const CollisionMesh& mesh,
     const Eigen::MatrixXd& V,
-    const BroadPhaseMethod method = BroadPhaseMethod::HASH_GRID);
+    const BroadPhaseMethod method = BroadPhaseMethod::HASH_GRID,
+    double inflation_radius = -1.0);
 
 } // namespace ipc

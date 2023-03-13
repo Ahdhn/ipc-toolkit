@@ -396,21 +396,23 @@ double compute_minimum_distance(
 bool has_intersections(
     const CollisionMesh& mesh,
     const Eigen::MatrixXd& V,
-    const BroadPhaseMethod method)
+    const BroadPhaseMethod method,
+    double inflation_radius)
 {
     assert(V.rows() == mesh.num_vertices());
     const Eigen::MatrixXi& E = mesh.edges();
     const Eigen::MatrixXi& F = mesh.faces();
 
-    const double conservative_inflation_radius =
-        1e-6 * world_bbox_diagonal_length(V);
+    if (inflation_radius < 0.0) {
+        inflation_radius = 1e-6 * world_bbox_diagonal_length(V);
+    }
 
     // TODO: Expose the broad-phase method
     std::unique_ptr<BroadPhase> broad_phase =
         BroadPhase::make_broad_phase(method);
     broad_phase->can_vertices_collide = mesh.can_collide;
 
-    broad_phase->build(V, E, F, conservative_inflation_radius);
+    broad_phase->build(V, E, F, inflation_radius);
 
     if (V.cols() == 2) { // Need to check segment-segment intersections in 2D
         std::vector<EdgeEdgeCandidate> ee_candidates;
