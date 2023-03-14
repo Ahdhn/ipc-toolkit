@@ -3,7 +3,7 @@
 ################################################################################
 
 add_executable(ipc_toolkit_tests
-  main.cu
+  main.cpp
 
   # Test barrier and dertivatives
   barrier/test_barrier.cpp
@@ -51,7 +51,7 @@ add_executable(ipc_toolkit_tests
 )
 
 target_include_directories(ipc_toolkit_tests PUBLIC ".")
-
+set_property(TARGET ipc_toolkit_tests PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 ################################################################################
 # Required Libraries
 ################################################################################
