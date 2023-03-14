@@ -191,6 +191,7 @@ if(IPC_TOOLKIT_WITH_CUDA)
   # library to be built with -dc as the member functions could be called by
   # other libraries and executables.
   set_target_properties(ipc_toolkit PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties(ipc_toolkit PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
   # Nvidia RTX8000 -> compute_75
   # Nvidia V100 -> compute_70
