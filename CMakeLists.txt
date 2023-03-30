@@ -28,8 +28,8 @@ endif()
 
 project(IPCToolkit
         DESCRIPTION "A set of reusable functions to integrate IPC into an existing simulation."
-        LANGUAGES CXX CUDA
-        VERSION "0.0.1")
+        LANGUAGES CXX
+        VERSION "1.0.0")
 
 option(IPC_TOOLKIT_BUILD_TESTS                "Build unit-tests"  ${IPC_TOOLKIT_TOPLEVEL_PROJECT})
 option(IPC_TOOLKIT_BUILD_PYTHON               "Build Python bindings"                         OFF)
@@ -64,6 +64,14 @@ include(ipc_toolkit_target_link_system_libraries)
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
+
+################################################################################
+# CMake Policies
+################################################################################
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
+  cmake_policy(SET CMP0135 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+endif()
 
 ################################################################################
 # IPC Toolkit Library
@@ -193,14 +201,18 @@ if(IPC_TOOLKIT_WITH_CUDA)
   set_target_properties(ipc_toolkit PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
   set_target_properties(ipc_toolkit PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
-  # Nvidia RTX8000 -> compute_75
-  # Nvidia V100 -> compute_70
-  # Nvidia 1080/1080Ti -> compute_61
-  # Nvidia 3080Ti -> compute_86
-  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 86)
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24.0")
+    set(CMAKE_CUDA_ARCHITECTURES "native")
+    set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "native")
+  else()
+    include(FindCUDA/select_compute_arch)
+    CUDA_DETECT_INSTALLED_GPUS(CUDA_ARCH_LIST)
+    string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
+    string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
+    string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
+    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
+    set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
   endif()
-  set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "86")
 
   if(APPLE)
     # We need to add the path to the driver (libcuda.dylib) as an rpath,
