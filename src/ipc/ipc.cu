@@ -83,21 +83,21 @@ double compute_collision_free_stepsize(
 
 bool has_intersections(
     const CollisionMesh& mesh,
-    const Eigen::MatrixXd& V,
-    const BroadPhaseMethod method,
+    const Eigen::MatrixXd& vertices,
+    const BroadPhaseMethod broad_phase_method,
     double inflation_radius)
 {
     assert(vertices.rows() == mesh.num_vertices());
-
+    
     if (inflation_radius < 0.0) {
-        inflation_radius = 1e-6 * world_bbox_diagonal_length(V);
+        inflation_radius = 1e-6 * world_bbox_diagonal_length(vertices);
     }    
 
     std::unique_ptr<BroadPhase> broad_phase =
         BroadPhase::make_broad_phase(broad_phase_method);
     broad_phase->can_vertices_collide = mesh.can_collide;
 
-    broad_phase->build(V, E, F, inflation_radius);
+    broad_phase->build(vertices, mesh.edges(), mesh.faces(), inflation_radius);
 
     if (vertices.cols() == 2) {
         // Need to check segment-segment intersections in 2D
