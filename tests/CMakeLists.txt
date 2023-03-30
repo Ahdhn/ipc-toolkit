@@ -51,7 +51,6 @@ add_executable(ipc_toolkit_tests
 )
 
 target_include_directories(ipc_toolkit_tests PUBLIC ".")
-set_property(TARGET ipc_toolkit_tests PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 ################################################################################
 # Required Libraries
 ################################################################################
@@ -71,13 +70,12 @@ include(json)
 ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PUBLIC nlohmann_json::nlohmann_json)
 
 if(IPC_TOOLKIT_WITH_CUDA)  
-  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_ARCHITECTURES "86")
+  set_property(TARGET ipc_toolkit_tests PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)    
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
   target_compile_options(ipc_toolkit_tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
   --generate-line-info
   --use_fast_math
-  --relocatable-device-code=true>)
-  #find_package(CUDAToolkit)
-  #ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
+  --relocatable-device-code=true>)  
 endif()
 
 ################################################################################
@@ -87,11 +85,7 @@ endif()
 target_compile_definitions(ipc_toolkit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 # Test data directory definition
-#if(WIN32)
-#  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}\\\\data\\\\")
-#else()
-  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
-#sendif()
+target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 
 ################################################################################
 # Register tests

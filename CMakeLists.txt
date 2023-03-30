@@ -35,7 +35,7 @@ option(IPC_TOOLKIT_BUILD_TESTS                "Build unit-tests"  ${IPC_TOOLKIT_
 option(IPC_TOOLKIT_BUILD_PYTHON               "Build Python bindings"                         OFF)
 option(IPC_TOOLKIT_WITH_CORRECT_CCD           "Use the TightInclusion CCD"                     ON)
 option(IPC_TOOLKIT_WITH_SIMD                  "Enable SIMD"                                   OFF)
-option(IPC_TOOLKIT_WITH_CUDA                  "Enable CUDA CCD"                               ON)
+option(IPC_TOOLKIT_WITH_CUDA                  "Enable CUDA CCD"                               OFF)
 option(IPC_TOOLKIT_WITH_RATIONAL_INTERSECTION "Use rational edge-triangle intersection check" OFF)
 
 # Set default minimum C++ standard
@@ -63,7 +63,6 @@ include(ipc_toolkit_target_link_system_libraries)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 ################################################################################
 # CMake Policies
@@ -185,8 +184,7 @@ target_compile_features(ipc_toolkit PUBLIC cxx_std_17)
 ################################################################################
 # CUDA
 ################################################################################
-set(CUDA_SEPARABLE_COMPILATION ON)
-if(IPC_TOOLKIT_WITH_CUDA)
+if(IPC_TOOLKIT_WITH_CUDA)  
   include(CheckLanguage)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
@@ -210,7 +208,7 @@ if(IPC_TOOLKIT_WITH_CUDA)
     string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
     string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
     string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
+    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})	
     set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
   endif()
 
