@@ -3,7 +3,8 @@ set(SOURCES
   collision_mesh.hpp
   config.hpp
   ipc.hpp
-  ipc.cu
+  ipc.cpp
+  $<$<BOOL:${IPC_TOOLKIT_WITH_CUDA}>:ipc.cu>  
 )
 
 ipc_toolkit_prepend_current_path(SOURCES)

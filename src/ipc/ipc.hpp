@@ -54,6 +54,14 @@ double compute_collision_free_stepsize(
     const double tolerance = DEFAULT_CCD_TOLERANCE,
     const long max_iterations = DEFAULT_CCD_MAX_ITERATIONS);
 
+double compute_collision_free_stepsize_gpu(
+    const CollisionMesh& mesh,
+    const Eigen::MatrixXd& vertices_t0,
+    const Eigen::MatrixXd& vertices_t1,
+    const double min_distance = 0.0,
+    const double tolerance = DEFAULT_CCD_TOLERANCE,
+    const long max_iterations = DEFAULT_CCD_MAX_ITERATIONS);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Utilities
 
