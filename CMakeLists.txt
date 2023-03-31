@@ -70,7 +70,11 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 ################################################################################
 
 # Add an empty library and fill in the list of sources in `src/CMakeLists.txt`.
-add_library(ipc_toolkit)
+if(WIN32)
+  add_library(ipc_toolkit STATIC)
+else()
+  add_library(ipc_toolkit SHARED)
+endif()
 add_library(ipc::toolkit ALIAS ipc_toolkit)
 
 # Fill in configuration options
