@@ -5,10 +5,6 @@
 
 #include <ipc/config.hpp>
 
-#ifdef IPC_TOOLKIT_WITH_CUDA
-#include <ccdgpu/helper.cuh>
-#endif
-
 #include <igl/predicates/segment_segment_intersect.h>
 
 namespace ipc {
@@ -53,14 +49,9 @@ double compute_collision_free_stepsize(
 
     if (broad_phase_method == BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU) {
 #ifdef IPC_TOOLKIT_WITH_CUDA
-        double min_distance = 0; // TODO
-        const double step_size = ccd::gpu::compute_toi_strategy(
-            vertices_t0, vertices_t1, mesh.edges(), mesh.faces(),
-            max_iterations, min_distance, tolerance);
-        if (step_size < 1.0) {
-            return 0.8 * step_size;
-        }
-        return 1.0;
+        return compute_collision_free_stepsize_gpu(
+            mesh, vertices_t0, vertices_t1, min_distance, tolerance,
+            max_iterations);
 #else
         throw std::runtime_error(
             "GPU Sweep and Tiniest Queue is disabled because CUDA is disabled!");
@@ -84,19 +75,20 @@ double compute_collision_free_stepsize(
 bool has_intersections(
     const CollisionMesh& mesh,
     const Eigen::MatrixXd& vertices,
-    const BroadPhaseMethod broad_phase_method)
+    const BroadPhaseMethod broad_phase_method,
+    double inflation_radius)
 {
     assert(vertices.rows() == mesh.num_vertices());
 
-    const double conservative_inflation_radius =
-        1e-6 * world_bbox_diagonal_length(vertices);
+    if (inflation_radius < 0.0) {
+        inflation_radius = 1e-6 * world_bbox_diagonal_length(vertices);
+    }
 
     std::unique_ptr<BroadPhase> broad_phase =
         BroadPhase::make_broad_phase(broad_phase_method);
     broad_phase->can_vertices_collide = mesh.can_collide;
 
-    broad_phase->build(
-        vertices, mesh.edges(), mesh.faces(), conservative_inflation_radius);
+    broad_phase->build(vertices, mesh.edges(), mesh.faces(), inflation_radius);
 
     if (vertices.cols() == 2) {
         // Need to check segment-segment intersections in 2D

@@ -54,6 +54,14 @@ double compute_collision_free_stepsize(
     const double tolerance = DEFAULT_CCD_TOLERANCE,
     const long max_iterations = DEFAULT_CCD_MAX_ITERATIONS);
 
+double compute_collision_free_stepsize_gpu(
+    const CollisionMesh& mesh,
+    const Eigen::MatrixXd& vertices_t0,
+    const Eigen::MatrixXd& vertices_t1,
+    const double min_distance = 0.0,
+    const double tolerance = DEFAULT_CCD_TOLERANCE,
+    const long max_iterations = DEFAULT_CCD_MAX_ITERATIONS);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Utilities
 
@@ -65,6 +73,7 @@ double compute_collision_free_stepsize(
 bool has_intersections(
     const CollisionMesh& mesh,
     const Eigen::MatrixXd& vertices,
-    const BroadPhaseMethod broad_phase_method = DEFAULT_BROAD_PHASE_METHOD);
+    const BroadPhaseMethod broad_phase_method = DEFAULT_BROAD_PHASE_METHOD,
+    double inflation_radius = -1.0);
 
 } // namespace ipc

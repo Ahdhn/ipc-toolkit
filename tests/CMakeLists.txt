@@ -51,7 +51,6 @@ add_executable(ipc_toolkit_tests
 )
 
 target_include_directories(ipc_toolkit_tests PUBLIC ".")
-
 ################################################################################
 # Required Libraries
 ################################################################################
@@ -70,9 +69,17 @@ ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PUBLIC finitediff::fi
 include(json)
 ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PUBLIC nlohmann_json::nlohmann_json)
 
-if(IPC_TOOLKIT_WITH_CUDA)
-  find_package(CUDAToolkit)
-  ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
+if(IPC_TOOLKIT_WITH_CUDA)  
+  set_property(TARGET ipc_toolkit_tests PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)    
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
+  target_compile_options(ipc_toolkit_tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+  --generate-line-info
+  --use_fast_math
+  --relocatable-device-code=true>)
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+  #find_package(CUDAToolkit)
+  #ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
 endif()
 
 ################################################################################
@@ -82,11 +89,7 @@ endif()
 target_compile_definitions(ipc_toolkit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 # Test data directory definition
-if(WIN32)
-  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}\\\\data\\\\")
-else()
-  target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
-endif()
+target_compile_definitions(ipc_toolkit_tests PUBLIC TEST_DATA_DIR_CSTR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 
 ################################################################################
 # Register tests

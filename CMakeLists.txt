@@ -77,7 +77,11 @@ endif()
 ################################################################################
 
 # Add an empty library and fill in the list of sources in `src/CMakeLists.txt`.
-add_library(ipc_toolkit)
+if(WIN32)
+  add_library(ipc_toolkit STATIC)
+else()
+  add_library(ipc_toolkit SHARED)
+endif()
 add_library(ipc::toolkit ALIAS ipc_toolkit)
 
 # Fill in configuration options
@@ -184,8 +188,7 @@ target_compile_features(ipc_toolkit PUBLIC cxx_std_17)
 ################################################################################
 # CUDA
 ################################################################################
-
-if(IPC_TOOLKIT_WITH_CUDA)
+if(IPC_TOOLKIT_WITH_CUDA)  
   include(CheckLanguage)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
@@ -198,6 +201,7 @@ if(IPC_TOOLKIT_WITH_CUDA)
   # library to be built with -dc as the member functions could be called by
   # other libraries and executables.
   set_target_properties(ipc_toolkit PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties(ipc_toolkit PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
   if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24.0")
     set(CMAKE_CUDA_ARCHITECTURES "native")
@@ -208,7 +212,7 @@ if(IPC_TOOLKIT_WITH_CUDA)
     string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
     string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
     string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
+    set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})	
     set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
   endif()
 

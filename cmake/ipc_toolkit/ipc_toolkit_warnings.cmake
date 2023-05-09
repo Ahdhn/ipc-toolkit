@@ -2,6 +2,7 @@
 # See comments and discussions here:
 # http://stackoverflow.com/questions/5088460/flags-to-enable-thorough-and-verbose-g-warnings
 ################################################################################
+set(REQUIRED_CMAKE_VERSION "3.8.0")
 
 if(TARGET ipc::toolkit::warnings)
   return()
@@ -26,17 +27,17 @@ set(IPC_TOOLKIT_FLAGS
     # -Wredundant-decls
 
     -Werror=implicit
-    -Werror=nonnull
-    -Werror=init-self
-    -Werror=main
-    -Werror=missing-braces
-    -Werror=sequence-point
-    -Werror=return-type
-    -Werror=trigraphs
-    -Warray-bounds
-    -Werror=write-strings
-    -Werror=address
-    -Werror=int-to-pointer-cast
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=nonnull>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=init-self>
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=main>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=missing-braces>
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=sequence-point>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=return-type>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=trigraphs>
+    -Warray-bounds    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=write-strings>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=address>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=int-to-pointer-cast>
     -Werror=pointer-to-int-cast
 
     -Wno-unused-variable
@@ -83,10 +84,10 @@ set(IPC_TOOLKIT_FLAGS
     -Woverloaded-virtual
     # -Wundef
 
-    -Wnon-virtual-dtor
-    -Wdelete-non-virtual-dtor
-    -Werror=non-virtual-dtor
-    -Werror=delete-non-virtual-dtor
+    -Wnon-virtual-dtor    
+    -Wdelete-non-virtual-dtor    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=non-virtual-dtor>    
+    $<IF:$<COMPILE_LANGUAGE:CUDA>,,-Werror=delete-non-virtual-dtor>
 
     -Wno-sign-compare
 

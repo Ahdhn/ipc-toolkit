@@ -10,8 +10,8 @@ set(STQ_WITH_CUDA ON CACHE BOOL "Enable CUDA Implementation" FORCE)
 include(FetchContent)
 FetchContent_Declare(
     gpu_ccd
-    GIT_REPOSITORY https://github.com/dbelgrod/CCD-GPU.git
-    GIT_TAG feb54c029a5fb7b8dd195b5485c3f9e85324199b
+    GIT_REPOSITORY https://github.com/Ahdhn/CCD-GPU.git
+    GIT_TAG 43b61e834c2610dbebb28c9ee527d22450fb3b90
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(gpu_ccd)

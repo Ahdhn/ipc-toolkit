@@ -10,6 +10,7 @@ set(SOURCES
   spatial_hash.cpp
   spatial_hash.hpp
   sweep_and_tiniest_queue.cpp
+  $<$<BOOL:${IPC_TOOLKIT_WITH_CUDA}>:sweep_and_tiniest_queue.cu>
   sweep_and_tiniest_queue.hpp
   voxel_size_heuristic.cpp
   voxel_size_heuristic.hpp

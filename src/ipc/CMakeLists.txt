@@ -4,6 +4,7 @@ set(SOURCES
   config.hpp
   ipc.hpp
   ipc.cpp
+  $<$<BOOL:${IPC_TOOLKIT_WITH_CUDA}>:ipc.cu>  
 )
 
 ipc_toolkit_prepend_current_path(SOURCES)
