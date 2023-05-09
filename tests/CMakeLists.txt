@@ -75,7 +75,11 @@ if(IPC_TOOLKIT_WITH_CUDA)
   target_compile_options(ipc_toolkit_tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
   --generate-line-info
   --use_fast_math
-  --relocatable-device-code=true>)  
+  --relocatable-device-code=true>)
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  set_target_properties(ipc_toolkit_tests PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+  #find_package(CUDAToolkit)
+  #ipc_toolkit_target_link_system_libraries(ipc_toolkit_tests PRIVATE CUDA::cudart)
 endif()
 
 ################################################################################
