@@ -166,7 +166,11 @@ void check_toi(
 // ---------------------------------------------------
 // Tests
 // ---------------------------------------------------
+#ifdef IPC_TOOLKIT_WITH_CORRECT_CCD
 TEST_CASE("Point-edge 2D ToI", "[ccd][toi]")
+#else
+TEST_CASE("Point-edge 2D ToI", "[ccd][toi][!mayfail]")
+#endif
 {
     Eigen::Vector2d p_t0, e0_t0, e1_t0;
     Eigen::Vector2d dp, de0, de1;
@@ -577,7 +581,11 @@ TEST_CASE("No Zero ToI CCD", "[ccd][no-zero-toi]")
     CHECK(!is_impacting);
 }
 
+#ifdef IPC_TOOLKIT_WITH_CORRECT_CCD
 TEST_CASE("Slow EE CCD", "[ccd][edge-edge][slow]")
+#else
+TEST_CASE("Slow EE CCD", "[ccd][edge-edge][slow][!mayfail]")
+#endif
 {
     Eigen::Vector3d ea0_t0, ea1_t0, eb0_t0, eb1_t0, ea0_t1, ea1_t1, eb0_t1,
         eb1_t1;
@@ -636,4 +644,44 @@ TEST_CASE("Slow EE CCD 2", "[ccd][edge-edge][slow][thisone]")
 
     CAPTURE(toi);
     CHECK(is_impacting);
+}
+
+TEST_CASE("Squash Tet", "[ccd]")
+{
+    const double dhat = 1e-3;
+
+    Eigen::MatrixXd rest_vertices(4, 3);
+    rest_vertices << 0.0, 0.0, 0.0, //
+        1.0, 0.0, 0.0,              //
+        0.0, 1.0, 0.0,              //
+        0.0, 0.0, 1.0;
+
+    Eigen::MatrixXd deformed_vertices = rest_vertices;
+    deformed_vertices(3, 0) += 0.1;
+    deformed_vertices(3, 1) -= 0.1;
+    deformed_vertices(3, 2) = -0.5 * dhat;
+
+    Eigen::MatrixXi edges(6, 2);
+    edges << 0, 1, //
+        0, 2,      //
+        0, 3,      //
+        1, 2,      //
+        1, 3,      //
+        2, 3;
+    Eigen::MatrixXi faces(4, 3);
+    faces << 0, 2, 1, //
+        0, 1, 3,      //
+        0, 3, 2,      //
+        1, 2, 3;
+
+    ipc::CollisionMesh mesh =
+        ipc::CollisionMesh::build_from_full_mesh(rest_vertices, edges, faces);
+
+    // BENCHMARK("compute toi")
+    // {
+    logger().debug(
+        "toi={}",
+        ipc::compute_collision_free_stepsize(
+            mesh, rest_vertices, deformed_vertices));
+    // };
 }
